@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/components/ui/loading";
 import { useNotebooksStore, useUserInfoStore } from "@/store/main";
 import { getWereadUserId } from "@/util/cookies";
 import { clientFetcher } from "@/util/fetcher";
@@ -7,7 +8,6 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Header from "./header";
 import Notebooks from "./notebooks";
-
 export default function Home() {
   const [wrVid, setWrVid] = useState<string | null>(null);
   const router = useRouter();
@@ -19,10 +19,8 @@ export default function Home() {
     const wereadUserId = getWereadUserId();
     if (wereadUserId) {
       setWrVid(wereadUserId);
-    } else {
-      router.push("/login");
     }
-  }, [router]);
+  }, []);
 
   const { data, isLoading } = useSWR(
     wrVid ? `/api/userInfo?userVid=${wrVid}` : null,
@@ -46,7 +44,13 @@ export default function Home() {
     }
   }, [notebooks, notebooksLoading, setNotebooks]);
 
-  if (isLoading) return <div>Loading...</div>;
+  useEffect(() => {
+    if (data?.errCode || notebooks?.error) {
+      router.push("/login");
+    }
+  }, [data, notebooks, router]);
+
+  if (isLoading) return <Loading />;
 
   return (
     <div className="flex flex-col gap-4">
