@@ -1,4 +1,4 @@
-import { parseCookies, setCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function getWereadUserId(ctx?: any) {
@@ -25,5 +25,13 @@ export function setWereadCookie(wereadCookie: string, ctx?: any) {
         sameSite: "strict",
       });
     }
+  }
+}
+
+export function clearAllCookies() {
+  const cookies = parseCookies();
+
+  for (const cookieName of Object.keys(cookies)) {
+    destroyCookie(null, cookieName);
   }
 }
