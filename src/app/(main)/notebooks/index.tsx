@@ -1,9 +1,15 @@
 import { useNotebooksStore } from "@/store/main";
 import { ChevronRight, LoaderPinwheel } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Notebooks() {
   const { notebooks } = useNotebooksStore();
+  const router = useRouter();
+
+  const jumpToBookDetail = (bookId: string) => {
+    router.push(`/bookDetail/${bookId}`);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -46,7 +52,7 @@ export default function Notebooks() {
           </div>
           <div className="flex h-full flex-col items-center justify-between gap-2">
             <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full hover:bg-foreground/5">
-              <ChevronRight />
+              <ChevronRight onClick={() => jumpToBookDetail(notebook.bookId)} />
             </div>
             <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full hover:bg-foreground/5">
               <LoaderPinwheel />

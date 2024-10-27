@@ -28,7 +28,7 @@ export default function Header() {
         </div>
       </div>
       <div>
-        <Button onClick={handleLogout} variant="ghost" size="icon">
+        <Button onClick={handleLogout} variant="outline" size="icon">
           <LogOut />
         </Button>
       </div>
