@@ -99,7 +99,7 @@ export default function BookDetail() {
       return;
     }
     let markdown = "";
-    if (contentWithoutChapter.length > 0) {
+    if (chapterInfo.length === 0) {
       markdown = convertToMarkdownWithoutBookmarks(
         contentWithoutChapter,
         bookInfo
@@ -193,7 +193,7 @@ export default function BookDetail() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {contentWithoutChapter.length > 0 ? (
+        {chapterInfo.length === 0 ? (
           <div className="flex flex-col gap-2">
             {contentWithoutChapter.map((review) => (
               <div key={review.chapterIdx} className="flex flex-col gap-2">
