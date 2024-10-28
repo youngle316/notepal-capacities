@@ -17,6 +17,11 @@ interface Notebook {
   reviewCount: number;
 }
 
+export interface Space {
+  id: string;
+  title: string;
+}
+
 export const useUserInfoStore = create<{
   userInfo: UserInfo;
   setUserInfo: (userInfo: UserInfo) => void;
@@ -34,4 +39,28 @@ export const useNotebooksStore = create<{
 }>((set) => ({
   notebooks: [],
   setNotebooks: (notebooks) => set({ notebooks }),
+}));
+
+export const useSettingsStore = create<{
+  token: string;
+  setToken: (token: string) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  token: "",
+  setToken: (token) => set({ token }),
+  open: false,
+  setOpen: (open) => set({ open }),
+}));
+
+export const useSpacesStore = create<{
+  spaces: Space[];
+  setSpaces: (spaces: Space[]) => void;
+  selectedSpace: string;
+  setSelectedSpace: (space: string) => void;
+}>((set) => ({
+  spaces: [],
+  setSpaces: (spaces) => set({ spaces }),
+  selectedSpace: "",
+  setSelectedSpace: (space) => set({ selectedSpace: space }),
 }));

@@ -1,3 +1,4 @@
+import { SettingsDialog } from "@/components/settings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useUserInfoStore } from "@/store/main";
@@ -13,11 +14,19 @@ export default function Header() {
     router.push("/login");
   };
 
+  const goHome = () => {
+    router.push("/");
+  };
+
+  const goSettings = () => {
+    router.push("/settings");
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex gap-2">
         <div>
-          <Avatar className="h-12 w-12">
+          <Avatar className="h-12 w-12 cursor-pointer" onClick={goHome}>
             <AvatarImage src={userInfo.avatar} alt={userInfo.name} />
             <AvatarFallback>{userInfo.name}</AvatarFallback>
           </Avatar>
@@ -27,7 +36,8 @@ export default function Header() {
           <div className="font-bold">{userInfo.name}</div>
         </div>
       </div>
-      <div>
+      <div className="flex gap-2">
+        <SettingsDialog />
         <Button onClick={handleLogout} variant="outline" size="icon">
           <LogOut />
         </Button>

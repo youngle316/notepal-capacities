@@ -31,8 +31,6 @@ export const formatBookDetail = (
     };
   });
 
-  console.log("chaptersWithContent", chaptersWithContent);
-
   return chaptersWithContent;
 };
 

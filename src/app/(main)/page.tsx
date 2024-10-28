@@ -50,7 +50,12 @@ export default function Home() {
     }
   }, [data, notebooks, router]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading)
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loading />
+      </div>
+    );
 
   return (
     <div className="flex flex-col gap-4">
