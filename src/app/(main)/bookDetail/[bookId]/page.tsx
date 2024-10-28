@@ -3,6 +3,7 @@ import { SettingsDialog } from "@/components/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Loading from "@/components/ui/loading";
+import { toast, useToast } from "@/hooks/use-toast";
 import { useSettingsStore } from "@/store/main";
 import {
   formatBookDetail,
@@ -26,12 +27,13 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import useSWR from "swr";
 
 export default function BookDetail() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [doubanId, setDoubanId] = useState("");
+
+  const { toast } = useToast();
 
   const params = useParams();
   const bookId = params.bookId as string;
@@ -125,10 +127,15 @@ export default function BookDetail() {
       body: JSON.stringify(data),
     })
       .then(() => {
-        toast.success("同步成功, 请在 Capacities-Weblinks 中查看");
+        toast({
+          description: "同步成功, 请在 Capacities-Weblinks 中查看",
+        });
       })
       .catch(() => {
-        toast.error("同步失败");
+        toast({
+          variant: "destructive",
+          description: "同步失败",
+        });
       })
       .finally(() => {
         setIsSyncing(false);
@@ -249,10 +256,15 @@ const Review = ({ review }: { review: Review }) => {
       body: JSON.stringify(data),
     })
       .then(() => {
-        toast.success("同步成功, 请在 Capacities-DailyNotes 中查看");
+        toast({
+          description: "同步成功, 请在 Capacities-DailyNotes 中查看",
+        });
       })
       .catch(() => {
-        toast.error("同步失败");
+        toast({
+          variant: "destructive",
+          description: "同步失败",
+        });
       })
       .finally(() => {});
   };
@@ -328,10 +340,15 @@ const Bookmark = ({ bookmark }: { bookmark: Bookmark }) => {
       body: JSON.stringify(data),
     })
       .then(() => {
-        toast.success("同步成功, 请在 Capacities-DailyNotes 中查看");
+        toast({
+          description: "同步成功, 请在 Capacities-DailyNotes 中查看",
+        });
       })
       .catch(() => {
-        toast.error("同步失败");
+        toast({
+          variant: "destructive",
+          description: "同步失败",
+        });
       })
       .finally(() => {});
   };
