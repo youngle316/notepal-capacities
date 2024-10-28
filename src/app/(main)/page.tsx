@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Header from "./header";
 import Notebooks from "./notebooks";
+
 export default function Home() {
   const [wrVid, setWrVid] = useState<string | null>(null);
   const router = useRouter();
@@ -15,12 +16,16 @@ export default function Home() {
   const { setUserInfo } = useUserInfoStore();
   const { notebooks: allNoteBooks, setNotebooks } = useNotebooksStore();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies:
   useEffect(() => {
     const wereadUserId = getWereadUserId();
     if (wereadUserId) {
       setWrVid(wereadUserId);
     }
-  }, []);
+    if (data?.error || notebooks?.error || !wereadUserId) {
+      router.push("/login");
+    }
+  }, [router, wrVid]);
 
   const { data, isLoading } = useSWR(
     wrVid ? `/api/userInfo?userVid=${wrVid}` : null,
@@ -34,7 +39,7 @@ export default function Home() {
   }, [data, isLoading, setUserInfo]);
 
   const { data: notebooks, isLoading: notebooksLoading } = useSWR(
-    "/api/notebook",
+    wrVid ? "/api/notebook" : null,
     clientFetcher
   );
 
@@ -44,13 +49,7 @@ export default function Home() {
     }
   }, [notebooks, notebooksLoading, setNotebooks]);
 
-  useEffect(() => {
-    if (data?.errCode || notebooks?.error) {
-      router.push("/login");
-    }
-  }, [data, notebooks, router]);
-
-  if (isLoading)
+  if (!wrVid || isLoading || notebooksLoading)
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loading />
