@@ -237,9 +237,16 @@ export default function BookDetail() {
 }
 
 const Review = ({ review }: { review: Review }) => {
+  const { setOpen } = useSettingsStore();
+
   const handleSync = () => {
     const token = window.localStorage.getItem("capacities_token");
     const selectedSpace = window.localStorage.getItem("capacities_space");
+
+    if (!selectedSpace) {
+      setOpen(true);
+      return;
+    }
 
     const data = {
       spaceId: selectedSpace,
@@ -293,6 +300,7 @@ const Review = ({ review }: { review: Review }) => {
 };
 
 const Bookmark = ({ bookmark }: { bookmark: Bookmark }) => {
+  const { setOpen } = useSettingsStore();
   const renderStyle = (): CSSProperties => {
     if (bookmark.style === 0) {
       return {
@@ -323,6 +331,11 @@ const Bookmark = ({ bookmark }: { bookmark: Bookmark }) => {
   const handleSync = () => {
     const token = window.localStorage.getItem("capacities_token");
     const selectedSpace = window.localStorage.getItem("capacities_space");
+
+    if (!selectedSpace) {
+      setOpen(true);
+      return;
+    }
 
     const data = {
       spaceId: selectedSpace,
