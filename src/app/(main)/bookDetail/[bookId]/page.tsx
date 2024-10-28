@@ -107,7 +107,9 @@ export default function BookDetail() {
     }
     const data = {
       spaceId: selectedSpace,
-      url: `https://book.douban.com/subject/${doubanId}/`,
+      url: doubanId
+        ? `https://book.douban.com/subject/${doubanId}/`
+        : "https://weread.qq.com/",
       titleOverwrite: bookInfo?.title,
       descriptionOverwrite: "",
       tags: [],
