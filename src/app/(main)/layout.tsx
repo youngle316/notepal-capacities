@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import "../globals.css";
 
@@ -14,7 +15,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <div className="mx-5 my-12 max-w-screen-lg md:mx-auto">{children}</div>
+        <div className="mx-5 my-12 max-w-screen-lg md:mx-auto">
+          {children}
+          <Toaster />
+        </div>
       </body>
     </html>
   );
