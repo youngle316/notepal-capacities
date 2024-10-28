@@ -14,10 +14,6 @@ export async function GET(request: Request) {
       `https://weread.qq.com/web/user?userVid=${userVid}`,
     );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {

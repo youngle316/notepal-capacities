@@ -9,8 +9,9 @@ import { useState } from "react";
 export default function Login() {
   const [cookie, setCookie] = useState("");
   const router = useRouter();
-  const handleSetCookie = () => {
+  const handleSetCookie = async () => {
     setWereadCookie(cookie);
+    await new Promise((resolve) => setTimeout(resolve, 100));
     router.push("/");
   };
 
