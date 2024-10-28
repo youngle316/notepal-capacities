@@ -9,6 +9,12 @@ interface ChapterWithContent {
   title: string;
 }
 
+interface ChapterWithoutBookmarks {
+  chapterIdx: number;
+  chapterTitle: string;
+  reviews: Reviews[];
+}
+
 export const convertToMarkdown = (
   chaptersWithContent: ChapterWithContent[],
   bookInfo: Book,
@@ -32,6 +38,25 @@ export const convertToMarkdown = (
         : "";
 
       return `${chapterTitle}${reviews}${bookmarks}`;
+    })
+    .join("\n\n");
+
+  return `${authorInfo}${markdown}`;
+};
+
+export const convertToMarkdownWithoutBookmarks = (
+  chaptersWithContent: ChapterWithoutBookmarks[],
+  bookInfo: Book,
+) => {
+  const authorInfo = bookInfo.author ? `作者：${bookInfo.author}\n\n` : "";
+
+  const markdown = chaptersWithContent
+    .map((chapter) => {
+      const chapterTitle = `### ${chapter.chapterTitle}\n\n`;
+      const reviews = chapter.reviews
+        .map((review) => convertSingleToMarkdown(review.review))
+        .join("\n\n");
+      return `${chapterTitle}${reviews}`;
     })
     .join("\n\n");
 

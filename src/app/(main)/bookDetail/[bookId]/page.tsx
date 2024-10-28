@@ -1,12 +1,22 @@
 "use client";
 import { SettingsDialog } from "@/components/settings";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Loading from "@/components/ui/loading";
-import { formatBookDetail, getColorStyle } from "@/util";
+import { useSettingsStore } from "@/store/main";
+import {
+  formatBookDetail,
+  formatDetailWithoutChapter,
+  getColorStyle,
+} from "@/util";
 import { clientFetcher } from "@/util/fetcher";
-import { convertToMarkdown } from "@/util/markdown";
+import {
+  convertToMarkdown,
+  convertToMarkdownWithoutBookmarks,
+} from "@/util/markdown";
 import {
   ChevronLeft,
+  CircleHelp,
   LetterText,
   LoaderPinwheel,
   RefreshCw,
@@ -21,10 +31,13 @@ import useSWR from "swr";
 
 export default function BookDetail() {
   const [isSyncing, setIsSyncing] = useState(false);
+  const [doubanId, setDoubanId] = useState("");
 
   const params = useParams();
   const bookId = params.bookId as string;
   const router = useRouter();
+
+  const { setOpen } = useSettingsStore();
 
   const { data: bookmarkList, isLoading: bookmarkListLoading } = useSWR(
     `/api/bookmarklist?bookId=${bookId}`,
@@ -47,6 +60,13 @@ export default function BookDetail() {
     }
   }, [bookmarkList, reviewList]);
 
+  useEffect(() => {
+    const doubanId = window.localStorage.getItem(`${bookId}-doubanId`);
+    if (doubanId) {
+      setDoubanId(doubanId);
+    }
+  }, [bookId]);
+
   if (bookmarkListLoading || reviewListLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -56,13 +76,11 @@ export default function BookDetail() {
   }
 
   const bookInfo = bookmarkList?.book as Book;
-  const reviewInfo = reviewList?.reviews as Reviews[];
-  const bookmarkInfo = bookmarkList?.updated as Bookmark[];
+  const reviewInfo = (reviewList?.reviews as Reviews[]) || [];
+  const bookmarkInfo = (bookmarkList?.updated as Bookmark[]) || [];
   const chapterInfo = (bookmarkList?.chapters as Chapter[]) || [];
 
-  if (chapterInfo.length === 0) {
-    return <div>No chapters</div>;
-  }
+  const contentWithoutChapter = formatDetailWithoutChapter(reviewInfo);
 
   const chaptersWithContent = formatBookDetail(
     reviewInfo,
@@ -75,13 +93,21 @@ export default function BookDetail() {
     const selectedSpace = window.localStorage.getItem("capacities_space");
 
     if (!selectedSpace) {
-      // TODO: 提示用户选择空间
+      setOpen(true);
       return;
     }
-    const markdown = convertToMarkdown(chaptersWithContent, bookInfo);
+    let markdown = "";
+    if (contentWithoutChapter.length > 0) {
+      markdown = convertToMarkdownWithoutBookmarks(
+        contentWithoutChapter,
+        bookInfo
+      );
+    } else {
+      markdown = convertToMarkdown(chaptersWithContent, bookInfo);
+    }
     const data = {
       spaceId: selectedSpace,
-      url: "https://book.douban.com/subject/36284266/",
+      url: `https://book.douban.com/subject/${doubanId}/`,
       titleOverwrite: bookInfo?.title,
       descriptionOverwrite: "",
       tags: [],
@@ -107,6 +133,11 @@ export default function BookDetail() {
       });
   };
 
+  const handleDoubanIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    window.localStorage.setItem(`${bookId}-doubanId`, e.target.value);
+    setDoubanId(e.target.value);
+  };
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-2">
@@ -129,7 +160,7 @@ export default function BookDetail() {
           <div className="text-gray-500 text-sm">{bookInfo?.author}</div>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <div className="flex gap-2">
           <span className="text-gray-500 text-sm">
             {reviewInfo.length} 条想法
@@ -138,7 +169,14 @@ export default function BookDetail() {
             {bookmarkInfo.length} 条划线
           </span>
         </div>
-        <div>
+        <div className="flex items-center gap-2">
+          <Input
+            value={doubanId}
+            onChange={handleDoubanIdChange}
+            type="email"
+            placeholder="豆瓣 ID"
+          />
+          <CircleHelp className="h-8 w-8 cursor-pointer" />
           <Button disabled={isSyncing} onClick={handleSync}>
             {isSyncing && <RefreshCw className="animate-spin" />}
             全部同步
@@ -146,25 +184,44 @@ export default function BookDetail() {
         </div>
       </div>
       <div className="flex flex-col gap-4">
-        {chaptersWithContent.map((chapter) => (
-          <div key={chapter.chapterUid} className="flex flex-col gap-2">
-            <div className="font-bold text-lg">{chapter.title}</div>
-            <div className="flex flex-col gap-2">
-              {chapter.Content.reviews.map((review) => (
-                <div key={review.reviewId}>
-                  <Review review={review.review} />
+        {contentWithoutChapter.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {contentWithoutChapter.map((review) => (
+              <div key={review.chapterIdx} className="flex flex-col gap-2">
+                <div className="font-bold text-lg">{review.chapterTitle}</div>
+                <div className="flex flex-col gap-2">
+                  {review.reviews.map((review) => (
+                    <div key={review.reviewId}>
+                      <Review review={review.review} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="flex flex-col gap-2">
-              {chapter.Content.bookmarks.map((bookmark) => (
-                <div key={bookmark.bookmarkId}>
-                  <Bookmark bookmark={bookmark} />
-                </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <>
+            {chaptersWithContent.map((chapter) => (
+              <div key={chapter.chapterUid} className="flex flex-col gap-2">
+                <div className="font-bold text-lg">{chapter.title}</div>
+                <div className="flex flex-col gap-2">
+                  {chapter.Content.reviews.map((review) => (
+                    <div key={review.reviewId}>
+                      <Review review={review.review} />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {chapter.Content.bookmarks.map((bookmark) => (
+                    <div key={bookmark.bookmarkId}>
+                      <Bookmark bookmark={bookmark} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );

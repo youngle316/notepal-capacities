@@ -34,6 +34,35 @@ export const formatBookDetail = (
   return chaptersWithContent;
 };
 
+export const formatDetailWithoutChapter = (review: Reviews[]) => {
+  if (!review || review.length === 0) {
+    return [];
+  }
+  const uniqueChapters = Array.from(
+    review
+      .reduce((map, r) => {
+        map.set(r.review.chapterIdx, {
+          chapterIdx: r.review.chapterIdx,
+          chapterTitle: r.review.chapterTitle,
+        });
+        return map;
+      }, new Map())
+      .values(),
+  ).sort((a, b) => a.chapterIdx - b.chapterIdx);
+
+  return uniqueChapters.map(({ chapterIdx, chapterTitle }) => {
+    const chapterReviews = review
+      .filter((r) => r.review.chapterIdx === chapterIdx)
+      .sort((a, b) => a.review.createTime - b.review.createTime);
+
+    return {
+      chapterIdx,
+      chapterTitle,
+      reviews: chapterReviews,
+    };
+  });
+};
+
 export const getColorStyle = (style: number) => {
   switch (style) {
     case 1:

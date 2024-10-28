@@ -19,6 +19,8 @@ interface Review {
   content: string;
   createTime: number;
   chapterUid: number;
+  chapterTitle: string;
+  chapterIdx: number;
 }
 
 interface Reviews {
