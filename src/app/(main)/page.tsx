@@ -16,17 +16,6 @@ export default function Home() {
   const { setUserInfo } = useUserInfoStore();
   const { notebooks: allNoteBooks, setNotebooks } = useNotebooksStore();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies:
-  useEffect(() => {
-    const wereadUserId = getWereadUserId();
-    if (wereadUserId) {
-      setWrVid(wereadUserId);
-    }
-    if (data?.error || notebooks?.error || !wereadUserId) {
-      router.push("/login");
-    }
-  }, [router, wrVid]);
-
   const { data, isLoading } = useSWR(
     wrVid ? `/api/userInfo?userVid=${wrVid}` : null,
     clientFetcher
@@ -48,6 +37,17 @@ export default function Home() {
       setNotebooks(notebooks.books);
     }
   }, [notebooks, notebooksLoading, setNotebooks]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies:
+  useEffect(() => {
+    const wereadUserId = getWereadUserId();
+    if (wereadUserId) {
+      setWrVid(wereadUserId);
+    }
+    if (data?.error || notebooks?.error || !wereadUserId) {
+      router.push("/login");
+    }
+  }, [router, wrVid, data, notebooks]);
 
   if (!wrVid || isLoading || notebooksLoading)
     return (
