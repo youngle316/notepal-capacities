@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useUserInfoStore } from "@/store/main";
 import { clearAllCookies } from "@/util/cookies";
-import { LogOut } from "lucide-react";
+import { Github, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function Header() {
@@ -37,6 +37,15 @@ export default function Header() {
         </div>
       </div>
       <div className="flex gap-2">
+        <Button
+          onClick={() =>
+            window.open("https://github.com/youngle316/notepal-capacities")
+          }
+          variant="outline"
+          size="icon"
+        >
+          <Github />
+        </Button>
         <SettingsDialog />
         <Button onClick={handleLogout} variant="outline" size="icon">
           <LogOut />
