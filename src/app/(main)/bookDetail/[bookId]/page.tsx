@@ -147,6 +147,12 @@ export default function BookDetail() {
     setDoubanId(e.target.value);
   };
 
+  const handleHelp = () => {
+    window.open(
+      "https://www.yanglele.cc/zh/blog/sync-weread-to-capacities#%E5%85%A8%E9%83%A8%E5%90%8C%E6%AD%A5"
+    );
+  };
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-2">
@@ -185,7 +191,7 @@ export default function BookDetail() {
             type="email"
             placeholder="豆瓣 ID"
           />
-          <CircleHelp className="h-8 w-8 cursor-pointer" />
+          <CircleHelp onClick={handleHelp} className="h-8 w-8 cursor-pointer" />
           <Button disabled={isSyncing} onClick={handleSync}>
             {isSyncing && <RefreshCw className="animate-spin" />}
             全部同步
